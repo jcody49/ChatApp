@@ -12,18 +12,21 @@ import {
     ScrollView,
     Alert, } from 'react-native';
 
+    // Import an image as the background for the screen
 const image = require('../images/Bg-Image.png');
 
+// Define background color options
 const backgroundColors = {
-    a: '#090C08',
-    b: '#474056',
-    c: '#8A95A5',
-    d: '#B9C6AE',
+    a: '#D0E8F2', // A light blue background
+    b: '#F3F2DA', // A cream-colored background
+    c: '#D7BDE2', // A lavender background
+    d: '#A9DFBF', // A mint green background
 };
 
 
 
 const Start = ({ navigation }) => {
+    // Define state variables using the 'useState' hook
     const [name, setName] = useState(''); //define name-setter function
     const [color, setColor] = useState(backgroundColors.a);
     
@@ -32,15 +35,18 @@ const Start = ({ navigation }) => {
 
 
 
-    return ( // returns screen1
+    return ( // returns start screen
 
         <ImageBackground
         source={image}
         resizeMode="cover"
         style={styles.image}
-        >
-            <ScrollView contentContainerStyle={styles.container}>
+        > 
+            <ScrollView contentContainerStyle={styles.container}> 
+            <Text>
                 <Text style={styles.appTitle}>Chat App</Text>
+            </Text>
+
                 <View style={styles.inputContainer}>
 
                     <TextInput
@@ -51,13 +57,13 @@ const Start = ({ navigation }) => {
                     />
                     <Text style={styles.textColorSelector}>Choose background color:</Text>
                     <View style={styles.colorSelector}>
-                        <TouchableOpacity
+                        <TouchableOpacity //interactive element that reduces opacity upon press
                             style={[
-                            styles.circle,
-                            color === backgroundColors.a && styles.selectedCircle,
-                            { backgroundColor: backgroundColors.a },
+                            styles.circle, // Apply the circle style (shape and size)
+                            color === backgroundColors.a && styles.selectedCircle, // Apply the selectedCircle style conditionally
+                            { backgroundColor: backgroundColors.a }, // Set the background color to backgroundColors.a
                             ]}
-                            onPress={() => setColor(backgroundColors.a)}
+                            onPress={() => setColor(backgroundColors.a)} // When pressed, update the color to backgroundColors.a
                         ></TouchableOpacity>
                         <TouchableOpacity
                             style={[
@@ -82,34 +88,18 @@ const Start = ({ navigation }) => {
                             { backgroundColor: backgroundColors.d },
                             ]}
                             onPress={() => setColor(backgroundColors.d)}
-                        ></TouchableOpacity>
+                        ></TouchableOpacity> 
                     </View>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button}> 
                         <Text style={styles.buttonText} onPress={() => navigation.navigate('Chat', { name: name})}>Start Chatting</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
         </ImageBackground>
-
-
-
-        /*                       
-        <View style={styles.container}>
-            <Text>Hello Screen1!</Text>
-            <TextInput
-            style={styles.textInput}
-            value={name}
-            onChangeText={setName}
-            placeholder='Type your username here'
-            />
-            <Button
-            title="Go to Chat screen"
-            onPress={() => navigation.navigate('Chat', { name: name})}
-            />
-        </View>*/
     );
 };
 
+// Define the styles for this component using 'StyleSheet.create'
 const styles = StyleSheet.create({
     container: {
       flex: 1,
