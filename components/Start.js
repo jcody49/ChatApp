@@ -27,15 +27,18 @@ const backgroundColors = {
 
 
 const Start = ({ navigation }) => {
-    const auth = getAuth();
+    
     // Define state variables using the 'useState' hook
     const [name, setName] = useState(''); //define name-setter function
     const [color, setColor] = useState(backgroundColors.a);
     
+    const auth = getAuth();
+
     const signInUser = () => {
         signInAnonymously(auth)
         .then(result => { // app navigates to the Chat screen
-        navigation.navigate("Chat", {userID: result.user.uid, name, backgroundColor: backgroundColor }); // passing result.user.uid, name, and selected background color to chat screen
+        console.log("SIGNED IN", result);
+        navigation.navigate("Chat", {userID: result.user.uid, name, backgroundColor: color }); // passing result.user.uid, name, and selected background color to chat screen
         Alert.alert("Signed in Successfully!");
         })
         .catch((error) => {
@@ -105,9 +108,10 @@ const Start = ({ navigation }) => {
                                 onPress={() => setColor(backgroundColors.d)}
                             ></TouchableOpacity> 
                         </View>
-                        <TouchableOpacity style={styles.button}> 
-                            <Text style={styles.buttonText} onPress={() => navigation.navigate('Chat', { name: name})}>Start Chatting</Text>
+                        <TouchableOpacity style={styles.button} onPress={signInUser}>
+                            <Text style={styles.buttonText}>Start Chatting</Text>
                         </TouchableOpacity>
+
                     </View>
                 </KeyboardAvoidingView>
             </ScrollView>

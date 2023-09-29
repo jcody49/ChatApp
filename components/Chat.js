@@ -7,6 +7,7 @@ import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firesto
 const Chat = ({ db, route, navigation }) => {
     // Destructure the 'name' property from the 'route.params' object
     const { name, backgroundColor, userID } = route.params;
+    console.log('userID: ', userID);
 
     // messages state initialization
     const [messages, setMessages] = useState([]);
@@ -21,7 +22,7 @@ const Chat = ({ db, route, navigation }) => {
             let newMessages = [];
             documentsSnapshot.forEach(doc => {
                 newMessages.push({ 
-                    id: doc.id, 
+                    _id: doc.id, 
                     ...doc.data(), 
                     createdAt: new Date(doc.data().createdAt.toMillis()) 
                 })
@@ -35,9 +36,11 @@ const Chat = ({ db, route, navigation }) => {
     }, []); // The empty array '[]' means this effect runs once, when the component mounts
 
     const onSend = (newMessages) => {
-        console.log("New Message Data:", newMessages[0]);
-        addDoc(collection(db, "messages"), newMessages[0])
-    }
+        addDoc(collection(db, "messages"), newMessages[0]);
+        setMessages((previousMessages) =>
+          GiftedChat.append(previousMessages, newMessages)
+        );
+    };
 
     //styling for chat bubbles
     const renderBubble = (props) => {
