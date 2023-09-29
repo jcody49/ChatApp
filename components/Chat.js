@@ -1,41 +1,42 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
-
-
     
+import { collection, addDoc, onSnapshot, query, orderBy } from "firebase/firestore";
 
-const Chat = ({ route, navigation }) => {
+const Chat = ({ db, route, navigation }) => {
     // Destructure the 'name' property from the 'route.params' object
-    const { name } = route.params;
+    const { name, backgroundColor, userID } = route.params;
 
     // messages state initialization
     const [messages, setMessages] = useState([]);
 
+    let unsubMessages;
+
     useEffect(() => {
-        // Set the initial messages state with a static message
-        setMessages([
-            {
-                _id: 1,
-                text: 'Hello developer',
-                createdAt: new Date(),
-                user: {
-                  _id: 2,
-                  name: 'React Native',
-                  avatar: 'https://placeimg.com/140/140/any',
-                },
-              },
-              {
-                _id: 2,
-                text: 'This is a system message',
-                createdAt: new Date(),
-                system: true,
-            },
-        ]);
+        navigation.setOptions({ title: name });
+
+        const q = query(collection(db, "messages"), orderBy("createdAt", "desc"));
+        const unsubMessages = onSnapshot(q, (documentsSnapshot) => {
+            let newMessages = [];
+            documentsSnapshot.forEach(doc => {
+                newMessages.push({ 
+                    id: doc.id, 
+                    ...doc.data(), 
+                    createdAt: new Date(doc.data().createdAt.toMillis()) 
+                })
+            })
+            setMessages(newMessages);
+        })
+    
+        return () => {
+        if (unsubMessages) unsubMessages();
+        }
     }, []); // The empty array '[]' means this effect runs once, when the component mounts
 
-    const onSend = (newMessages) => { // appends new messages to previous messages
-        setMessages(previousMessages => GiftedChat.append(previousMessages, newMessages))
+    const onSend = (newMessages) => {
+        console.log("New Message Data:", newMessages[0]);
+        addDoc(collection(db, "messages"), newMessages[0])
     }
 
     //styling for chat bubbles
@@ -56,7 +57,7 @@ const Chat = ({ route, navigation }) => {
     };
 
     return (
-        <View style={[styles.container]}>
+        <View style={[styles.container, { backgroundColor: backgroundColor }]}>
           <GiftedChat
             messages={messages}
 
@@ -64,7 +65,7 @@ const Chat = ({ route, navigation }) => {
             renderBubble={renderBubble}
 
             user={{
-              _id: 1,
+              _id: userID,
               name: name,
             }}
         />
@@ -82,6 +83,6 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
     },
-  });
+});
 
 export default Chat;

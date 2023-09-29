@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { getAuth, signInAnonymously } from "firebase/auth";
 
 import { 
     StyleSheet, 
@@ -9,6 +9,7 @@ import {
     TextInput, 
     ImageBackground, 
     TouchableOpacity, 
+    KeyboardAvoidingView,
     ScrollView,
     Alert, } from 'react-native';
 
@@ -26,11 +27,21 @@ const backgroundColors = {
 
 
 const Start = ({ navigation }) => {
+    const auth = getAuth();
     // Define state variables using the 'useState' hook
     const [name, setName] = useState(''); //define name-setter function
     const [color, setColor] = useState(backgroundColors.a);
     
-
+    const signInUser = () => {
+        signInAnonymously(auth)
+        .then(result => { // app navigates to the Chat screen
+        navigation.navigate("Chat", {userID: result.user.uid, name, backgroundColor: backgroundColor }); // passing result.user.uid, name, and selected background color to chat screen
+        Alert.alert("Signed in Successfully!");
+        })
+        .catch((error) => {
+        Alert.alert("Unable to sign in, try later again.");
+        })
+    }
 
 
 
@@ -38,62 +49,67 @@ const Start = ({ navigation }) => {
     return ( // returns start screen
 
         <ImageBackground
-        source={image}
-        resizeMode="cover"
-        style={styles.image}
+            source={image}
+            resizeMode="cover"
+            style={styles.image}
         > 
             <ScrollView contentContainerStyle={styles.container}> 
-            <Text>
-                <Text style={styles.appTitle}>Chat App</Text>
-            </Text>
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+                <Text>
+                    <Text style={styles.appTitle}>Chat App</Text>
+                </Text>
 
-                <View style={styles.inputContainer}>
+                    <View style={styles.inputContainer}>
 
-                    <TextInput
-                        style={styles.textInput}
-                        value={name}
-                        onChangeText={setName}
-                        placeholder='Type your username here'
-                    />
-                    <Text style={styles.textColorSelector}>Choose background color:</Text>
-                    <View style={styles.colorSelector}>
-                        <TouchableOpacity //interactive element that reduces opacity upon press
-                            style={[
-                            styles.circle, // Apply the circle style (shape and size)
-                            color === backgroundColors.a && styles.selectedCircle, // Apply the selectedCircle style conditionally
-                            { backgroundColor: backgroundColors.a }, // Set the background color to backgroundColors.a
-                            ]}
-                            onPress={() => setColor(backgroundColors.a)} // When pressed, update the color to backgroundColors.a
-                        ></TouchableOpacity>
-                        <TouchableOpacity
-                            style={[
-                            styles.circle,
-                            color === backgroundColors.b && styles.selectedCircle,
-                            { backgroundColor: backgroundColors.b },
-                            ]}
-                            onPress={() => setColor(backgroundColors.b)}
-                        ></TouchableOpacity>
-                        <TouchableOpacity
-                            style={[
-                            styles.circle,
-                            color === backgroundColors.c && styles.selectedCircle,
-                            { backgroundColor: backgroundColors.c },
-                            ]}
-                            onPress={() => setColor(backgroundColors.c)}
-                        ></TouchableOpacity>
-                        <TouchableOpacity
-                            style={[
-                            styles.circle,
-                            color === backgroundColors.d && styles.selectedCircle,
-                            { backgroundColor: backgroundColors.d },
-                            ]}
-                            onPress={() => setColor(backgroundColors.d)}
-                        ></TouchableOpacity> 
+                        <TextInput
+                            style={styles.textInput}
+                            value={name}
+                            onChangeText={setName}
+                            placeholder='Type your username here'
+                        />
+                        <Text style={styles.textColorSelector}>Choose background color:</Text>
+                        <View style={styles.colorSelector}>
+                            <TouchableOpacity //interactive element that reduces opacity upon press
+                                style={[
+                                styles.circle, // Apply the circle style (shape and size)
+                                color === backgroundColors.a && styles.selectedCircle, // Apply the selectedCircle style conditionally
+                                { backgroundColor: backgroundColors.a }, // Set the background color to backgroundColors.a
+                                ]}
+                                onPress={() => setColor(backgroundColors.a)} // When pressed, update the color to backgroundColors.a
+                            ></TouchableOpacity>
+                            <TouchableOpacity
+                                style={[
+                                styles.circle,
+                                color === backgroundColors.b && styles.selectedCircle,
+                                { backgroundColor: backgroundColors.b },
+                                ]}
+                                onPress={() => setColor(backgroundColors.b)}
+                            ></TouchableOpacity>
+                            <TouchableOpacity
+                                style={[
+                                styles.circle,
+                                color === backgroundColors.c && styles.selectedCircle,
+                                { backgroundColor: backgroundColors.c },
+                                ]}
+                                onPress={() => setColor(backgroundColors.c)}
+                            ></TouchableOpacity>
+                            <TouchableOpacity
+                                style={[
+                                styles.circle,
+                                color === backgroundColors.d && styles.selectedCircle,
+                                { backgroundColor: backgroundColors.d },
+                                ]}
+                                onPress={() => setColor(backgroundColors.d)}
+                            ></TouchableOpacity> 
+                        </View>
+                        <TouchableOpacity style={styles.button}> 
+                            <Text style={styles.buttonText} onPress={() => navigation.navigate('Chat', { name: name})}>Start Chatting</Text>
+                        </TouchableOpacity>
                     </View>
-                    <TouchableOpacity style={styles.button}> 
-                        <Text style={styles.buttonText} onPress={() => navigation.navigate('Chat', { name: name})}>Start Chatting</Text>
-                    </TouchableOpacity>
-                </View>
+                </KeyboardAvoidingView>
             </ScrollView>
         </ImageBackground>
     );
