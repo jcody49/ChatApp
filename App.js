@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
-import { ImageBackground, StyleSheet, Text, View } from 'react-native';
-import Start from './components/Start';
-import Chat from './components/Chat';
+//import { ImageBackground, StyleSheet, Text, View, } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { useNetInfo } from "@react-native-community/netinfo";
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
+import { getStorage } from 'firebase/storage';
+
+import Start from './components/Start';
+import Chat from './components/Chat';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +17,8 @@ LogBox.ignoreLogs(["AsyncStorage has been extracted from"]);
 
 //const image = require('./images/Background Image.png'); // Declares the image variable here
 const App = () => {
+
+  const connectionStatus = useNetInfo();
 
   const firebaseConfig = {
     apiKey: "AIzaSyDNRzkN7ZehikUwwK2W1lhY4apVYiNN3l4",
@@ -32,6 +36,16 @@ const App = () => {
 
   // Initialize Cloud Firestore and get a reference to the service
   const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  useEffect(() => { // if this value changes, the useEffect code will be re-executed
+    if (connectionStatus.isConnected === false) {
+      Alert.alert("Connection Lost!"); //if you lose connection while using the app, you should see a “Connection lost!” alert.
+      disableNetwork(db); //disable attempts to reconnect to the Firestore Database by calling the Firestore function disableNetwork(db) when .isConnected is false
+    } else if (connectionStatus.isConnected === true) {
+      enableNetwork(db);
+    }
+  }, [connectionStatus.isConnected]);
 
   // Render the user interface
   return (
@@ -46,14 +60,21 @@ const App = () => {
         <Stack.Screen
           name="Chat"
         >
-          {props => <Chat db={db} {...props} />}
+          {props => 
+            <Chat 
+              isConnected={connectionStatus.isConnected} 
+              db={db} 
+              storage={storage} 
+              {...props} 
+            />
+          }
         </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
-
+/*
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -76,5 +97,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000c0',
   },
 });
+*/
 
 export default App;
