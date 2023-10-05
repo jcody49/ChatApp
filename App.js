@@ -6,6 +6,7 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import { initializeApp } from "firebase/app";
 import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
 import { getStorage } from 'firebase/storage';
+import * as ImagePicker from 'expo-image-picker';
 
 import Start from './components/Start';
 import Chat from './components/Chat';
@@ -73,30 +74,5 @@ const App = () => {
     </NavigationContainer>
   );
 };
-
-/*
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  image: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  text: {
-    color: 'white',
-    fontSize: 42,
-    lineHeight: 84,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    backgroundColor: '#000000c0',
-  },
-});
-*/
 
 export default App;

@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { Bubble, GiftedChat, InputToolbar } from "react-native-gifted-chat";
-   
+import CustomActions from './CustomActions';   
+import MapView from "react-native-maps";
+
 // Firebase
 import { collection, addDoc, onSnapshot, query, where, orderBy } from "firebase/firestore";
 
 // AsyncStorage
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+//Define Chat component
 const Chat = ({ db, route, navigation, isConnected, storage }) => {
     // Destructure the 'name' property from the 'route.params' object
     const { name, backgroundColor, userID } = route.params;
@@ -68,6 +71,15 @@ const Chat = ({ db, route, navigation, isConnected, storage }) => {
         );
     };
 
+    const renderInputToolbar = (props) => {
+        if (isConnected) {
+          return <InputToolbar {...props} />;
+        } else {
+          return null;
+        }
+    };
+    
+
     //styling for chat bubbles
     const renderBubble = (props) => {
         return (
@@ -85,14 +97,37 @@ const Chat = ({ db, route, navigation, isConnected, storage }) => {
         );
     };
 
+    const renderCustomActions = (props) => {
+        return <CustomActions storage={storage} {...props} />; // The renderCustomActions function is responsible for creating the circle button
+    };
+    
+    const renderCustomView = (props) => {
+        const { currentMessage } = props;
+        if (currentMessage.location) {
+            return (
+                <MapView
+                    style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
+                    region={{
+                    latitude: currentMessage.location.latitude,
+                    longitude: currentMessage.location.longitude,
+                    latitudeDelta: 0.0922,
+                    longitudeDelta: 0.0421,
+                    }}
+                />
+            );
+        }
+        return null;
+    };
+
     return (
         <View style={[styles.container, { backgroundColor: backgroundColor }]}>
           <GiftedChat
             messages={messages}
-
             onSend={messages => onSend(messages)}
             renderBubble={renderBubble}
-
+            renderInputToolbar={renderInputToolbar}
+            renderActions={renderCustomActions}
+            renderCustomView={renderCustomView}
             user={{
               _id: userID,
               name: name,
