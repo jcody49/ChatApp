@@ -48,9 +48,13 @@ Ensure Node.js 16.19.0 or a compatible version is installed:
 npm install 16.19.0
 npm use 16.19.0
 npm alias default 16.19.0
+
+
 Install Expo CLI globally:
 
 npm install -g expo-cli
+
+
 Create an Expo account at Expo and install the Expo Go app on your smartphone or set up a virtual machine on your computer.
 
 Create a new Chat App project with React Native:
@@ -60,6 +64,9 @@ npx create-expo-app ChatApp --template
 Start Expo:
 
 npm start
+or
+expo start
+
 To resolve image-related issues, run:
 
 npm i whatwg-fetch@3.6.2
